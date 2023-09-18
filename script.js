@@ -1,5 +1,9 @@
 /* script.js */
 
+const DRAW = 0;
+const PLAYERWIN = 1;
+const PLAYERLOSE = -1;
+
 function getComputerChoice() {
   /* get random number from range 0-2, then return rock, paper, or scissors based on number */
     
@@ -17,78 +21,55 @@ function getComputerChoice() {
   }
 }
 
-function getPlayerSelection() {
-    /* prompt user for their play, returns string of choice */
-
-    let validated = false;
-    let playerSelection;
-    while (!validated) {   
-        playerSelection = prompt("Rock, paper, or scissors?");
-        playerSelection = playerSelection.toLowerCase();
-
-        validated = validatePlayerSelection(playerSelection);
-    }
-
-    return playerSelection;
-}
-
-function validatePlayerSelection(playerSelection) {
-    /* checks if player input is either rock, paper or scissors */
-
-    if (playerSelection === "rock" || playerSelection === "paper" || playerSelection === "scissors") {
-        return true;
-    }
-    else {
-        alert("Invalid selection. Please try again.")
-        return false;
-    }
-}
-
 function battle (computerChoice, playerSelection) {
-    const DRAW = 0;
-    const PLAYERWIN = 1;
-    const PLAYERLOSE = -1;
-
     if (computerChoice === playerSelection) {
-        alert("Draw! Both sides picked " + computerChoice);
         return DRAW;
     }
 
     switch (playerSelection) {
         case "rock":
             if (computerChoice === "paper") {
-                alert ("You lose! Paper beats rock!");
                 return PLAYERLOSE;
             }
             else {
-                alert ("You win! Rock beats scissors!");
                 return PLAYERWIN;
             }
             break;
         case "paper":
             if (computerChoice === "scissors") {
-                alert ("You lose! Scissors beats paper!");
                 return PLAYERLOSE;
             }
             else {
-                alert ("You win! Paper beats rock!");
                 return PLAYERWIN;
             }
             break;
         case "scissors":
             if (computerChoice === "rock") {
-                alert("You lose! Rock beats scissors!");
                 return PLAYERLOSE;
             }
             else {
-                alert ("You win! Scissors beats paper!");
                 return PLAYERWIN;
             }
             break;
         default:
-            alert ("Nothing beats banana!");
             return DRAW;
         }
+}
+
+function getBattleReport(battleResult, computerChoice, playerSelection) {
+    let message = "";
+
+    if (battleResult === DRAW) {
+        message = "Draw! Both sides picked " + computerChoice + "!";
+    }
+    else if (battleResult === PLAYERWIN) {
+        message = "You win! " + playerSelection + " beats " + computerChoice + "!";
+    } 
+    else {
+        message = "You lose! " + computerChoice + " beats " + playerSelection + "!";
+    }
+
+    return message;
 }
 
 function game() {
@@ -96,6 +77,7 @@ function game() {
     let userScore = 0;
     let computerScore = 0;
 
+    /*
     alert ("Starting 5 round game of rock, paper, scissors");
 
     for (let gameNum = 0; gameNum < GAMELENGTH; gameNum++) {
@@ -119,25 +101,65 @@ function game() {
     }
     else {
         alert("It's a draw!");
-    }
+    } 
+    */
+
+}
+
+function displayMessage(message) {
+    const battleResultMsg = document.querySelector(".battle-results");
+    battleResultMsg.textContent = message;
+}
+
+function playRound(playerSelection){
+    let computerChoice = getComputerChoice();
+    let battleResult = battle(computerChoice, playerSelection);
+    let message = getBattleReport(battleResult, computerChoice, playerSelection);
+
+    displayMessage(message);
 }
 
 function gameLoop(){
-    /* main game loop, ask user if they want to play a game, if yes, play, else, stop program */
-    let keepGoing = true;
-    while (keepGoing){
-        let userConfirm = confirm("Would you like to play a game of rock, paper, scissors?");
+    /* main game loop */
+    const GAMELENGTH = 5;
+    let userScore = 0;
+    let computerScore = 0;
 
-        if (userConfirm === true) {
-            game();
-        }
-        else {
-            alert ("Goodbye. Thanks for playing.");
-            keepGoing = false;
-        }
-    }
+    const gameMenu = document.querySelector(".game-menu");
+    gameMenu.removeAttribute("hidden");
+
+    let playerSelection = -1;
+
 }
 
-gameLoop();
+function startGame() {
+    const startMenu = document.querySelector(".start-menu");
+    startMenu.setAttribute("hidden", "true");
 
 
+    gameLoop();
+}
+
+
+const rock_btn = document.querySelector(".rock-button");
+const paper_btn = document.querySelector(".paper-button");
+const scissors_btn = document.querySelector(".scissors-button");
+
+rock_btn.addEventListener("click", function(e) {
+    playerSelection = "rock";
+    playRound(playerSelection);
+});
+
+paper_btn.addEventListener("click", function(e) {
+    playerSelection = "paper";   
+    playRound(playerSelection); 
+});
+
+scissors_btn.addEventListener("click", function(e) {
+    playerSelection = "scissors";  
+    playRound(playerSelection);
+});
+
+
+const playButton = document.querySelector(".play-button");
+playButton.addEventListener("click", startGame);
