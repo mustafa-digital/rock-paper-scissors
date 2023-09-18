@@ -4,6 +4,13 @@ const DRAW = 0;
 const PLAYERWIN = 1;
 const PLAYERLOSE = -1;
 
+
+
+const GAMELENGTH = 5;
+let userScore = 0;
+let computerScore = 0;
+let currentRound = 0;
+
 function getComputerChoice() {
   /* get random number from range 0-2, then return rock, paper, or scissors based on number */
     
@@ -113,22 +120,33 @@ function displayMessage(message) {
 
 function playRound(playerSelection){
     let computerChoice = getComputerChoice();
-    let battleResult = battle(computerChoice, playerSelection);
-    let message = getBattleReport(battleResult, computerChoice, playerSelection);
+    let roundResult = battle(computerChoice, playerSelection);
+    let message = getBattleReport(roundResult, computerChoice, playerSelection);
 
+    updateGame(roundResult);
     displayMessage(message);
 }
 
-function gameLoop(){
-    /* main game loop */
-    const GAMELENGTH = 5;
-    let userScore = 0;
-    let computerScore = 0;
+function updateGame(roundResult){
+    if (roundResult === PLAYERWIN) userScore++;
+    else if (roundResult === PLAYERLOSE) computerScore++;
+    
+    roundDisplay.textContent = "Round: " + currentRound;
+    scores.innerHTML = "Your Score:" + userScore + "&emsp;&emsp;" + "Computer Score:" + computerScore;
 
-    const gameMenu = document.querySelector(".game-menu");
-    gameMenu.removeAttribute("hidden");
-
-    let playerSelection = -1;
+    if (currentRound === GAMELENGTH) {
+        const gameOver = document.querySelector(".game-over");
+        gameOver.removeAttribute("hidden");
+        if (userScore > computerScore)
+            gameOver.textContent = "Congratulations! You win!";
+        else if (userScore < computerScore) {
+            gameOver.textContent = "Sorry, you lose!";
+        }
+        else {
+            gameOver.textContent = "It's a draw!";
+        }
+    }
+    
 
 }
 
@@ -137,7 +155,8 @@ function startGame() {
     startMenu.setAttribute("hidden", "true");
 
 
-    gameLoop();
+    const gameMenu = document.querySelector(".game-menu");
+    gameMenu.removeAttribute("hidden");
 }
 
 
@@ -146,20 +165,31 @@ const paper_btn = document.querySelector(".paper-button");
 const scissors_btn = document.querySelector(".scissors-button");
 
 rock_btn.addEventListener("click", function(e) {
-    playerSelection = "rock";
-    playRound(playerSelection);
+    if (currentRound < 5) {
+        currentRound++;
+        let playerSelection = "rock";
+        roundResult = playRound(playerSelection);
+    }
 });
 
 paper_btn.addEventListener("click", function(e) {
-    playerSelection = "paper";   
-    playRound(playerSelection); 
+    if (currentRound < 5) {
+        currentRound++;
+        let playerSelection = "paper";   
+        roundResult = playRound(playerSelection); 
+    }
 });
 
 scissors_btn.addEventListener("click", function(e) {
-    playerSelection = "scissors";  
-    playRound(playerSelection);
+    if (currentRound < 5) {
+        currentRound++;
+        let playerSelection = "scissors";  
+        roundResult = playRound(playerSelection);
+    }
 });
-
 
 const playButton = document.querySelector(".play-button");
 playButton.addEventListener("click", startGame);
+
+const roundDisplay = document.querySelector(".round-display");
+const scores = document.querySelector(".scores");
